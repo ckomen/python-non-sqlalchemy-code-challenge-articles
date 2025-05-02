@@ -1,10 +1,7 @@
 class Magazine:
-    _all = []
-
     def __init__(self, name, category):
-        self.name = name
+        self.name = name  # use property setter
         self.category = category
-        Magazine._all.append(self)
 
     @property
     def name(self):
@@ -34,14 +31,21 @@ class Magazine:
         return list(set(article.author for article in self.articles()))
 
     def article_titles(self):
-        if not self.articles():
-            return None
-        return [article.title for article in self.articles()]
+        titles = [article.title for article in self.articles()]
+        return titles if titles else None
 
     def contributing_authors(self):
         authors = [article.author for article in self.articles()]
-        return [author for author in set(authors) if authors.count(author) > 2] or None
+        result = [author for author in set(authors) if authors.count(author) > 2]
+        return result if result else None
 
     @classmethod
-    def all(cls):
-        return cls._all
+    def top_publisher(cls):
+        from lib.article import Article
+        magazine_counts = {}
+        for article in Article.all:
+            mag = article.magazine
+            magazine_counts[mag] = magazine_counts.get(mag, 0) + 1
+        if not magazine_counts:
+            return None
+        return max(magazine_counts, key=magazine_counts.get)
